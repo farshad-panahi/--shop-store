@@ -5,3 +5,5 @@ venv
 .vscode
 *.pyc
 *.pyo
+db.sqlite3
+sql.sql
