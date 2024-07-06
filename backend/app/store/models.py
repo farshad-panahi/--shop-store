@@ -96,7 +96,7 @@ class OrderItem(models.Model):
 	unit_price     = models.DecimalField(max_digits=6, decimal_places=2)
 
 	class Meta:
-		unique_together = [['product', 'order']]
+		unique_together = [['product', 'product_amount']]
 
 	def __str__(self):
 		return self.product.name
@@ -110,6 +110,8 @@ class TempCart(models.Model):
     id               = models.UUIDField(primary_key=True, default=uuid4)
     datetime_created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+    	db_table = 'temporary_cart'
 
 class TempCartItem(models.Model):
 
@@ -123,9 +125,11 @@ class TempCartItem(models.Model):
 
 	quantity = models.PositiveSmallIntegerField()
 
+
 	class Meta:
-		unique_together = [['cart', 'product']]
-		
+		db_table        = 'cartitems'
+		unique_together = [['cart', 'items']]
+
 
 class Customer(models.Model):
 	
@@ -142,17 +146,19 @@ class Customer(models.Model):
 
 class Address(models.Model):
 	
-    customer = models.OneToOneField(
+	customer = models.OneToOneField(
 		Customer, on_delete=models.CASCADE, primary_key=True
 		)
 	
-    province = models.CharField(max_length=255)
-    city     = models.CharField(max_length=255)
-    street   = models.CharField(max_length=255)
+	province = models.CharField(max_length=255)
+	city     = models.CharField(max_length=255)
+	street   = models.CharField(max_length=255)
     
-    def __str__(self):
-    	return self.province
-
+	def __str__(self):
+		return self.province
+	
+	class Meta:
+		db_table = 'customer_address'
 
 class Comment(models.Model):
 
