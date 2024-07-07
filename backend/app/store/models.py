@@ -1,10 +1,22 @@
 """
-
+STOR:
+	CATEGORY FOR PRODUCTS,
+	FINAL PRODUCTS,
+	CUSTOMER ORDER CART => REAL CART, 
+	TEMPORARY CART FOR ANON USERS => PSEUDO CART
+	 
+	[
+	ORDER PROCESS:
+		ANON USERS CAN ADD DELETE ITEM TO THEIR TEMPORARY CART,
+		WHEN CHECKOUT, THEY HAVE TO LOGIN,
+		THEN WE MAKE A CUSTOMER ORDER WITH DETAIL OF CUSTOMER
+	]
 """
 
 from django.db import models
 from uuid import uuid4
-from django.conf import settings
+
+from ..roles.models import Customer
 
 
 class Category(models.Model):
@@ -68,7 +80,7 @@ class Order(models.Model):
 	)
 
 	customer = models.ForeignKey(
-		'Customer', on_delete=models.PROTECT, related_name='orders'
+		Customer, on_delete=models.PROTECT, related_name='orders'
 		)
 	
 	datetime_created = models.DateTimeField(auto_now_add=True)
@@ -131,59 +143,3 @@ class TempCartItem(models.Model):
 		unique_together = [['cart', 'items']]
 
 
-class Customer(models.Model):
-	
-	user = models.OneToOneField(
-		settings.AUTH_USER_MODEL, on_delete=models.PROTECT
-		)
-
-	phone = models.CharField(max_length=11)
-	birth_date = models.DateField(blank=True, null=True)
-
-	def __str__(self):
-		return self.user.first_name + ' ' + self.user.last_name
-
-
-class Address(models.Model):
-	
-	customer = models.OneToOneField(
-		Customer, on_delete=models.CASCADE, primary_key=True
-		)
-	
-	province = models.CharField(max_length=255)
-	city     = models.CharField(max_length=255)
-	street   = models.CharField(max_length=255)
-    
-	def __str__(self):
-		return self.province
-	
-	class Meta:
-		db_table = 'customer_address'
-
-class Comment(models.Model):
-
-    COMMENT_STATUS_WAITING      = 'W'
-    COMMENT_STATUS_APPROVED     = 'A'
-    COMMENT_STATUS_NOT_APPROVED = 'N'
-    
-    COMMENT_STATUS_CHOICES = (
-		(COMMENT_STATUS_WAITING,           'WAITING'),
-		(COMMENT_STATUS_APPROVED,         'APPROVED'),
-		(COMMENT_STATUS_NOT_APPROVED, 'NOT APPROVED')
-	)
-    
-    product = models.ForeignKey(
-		Product, on_delete=models.CASCADE, related_name='comments'
-		)
-    
-    name             = models.CharField(max_length=255)
-    body             = models.TextField()
-    datetime_created = models.DateTimeField(auto_now_add=True)
-    status           = models.CharField(
-		                                max_length=1, 
-		                                choices=COMMENT_STATUS_CHOICES, 
-		                                default=COMMENT_STATUS_WAITING
-										)
-
-    def __str__(self):
-    	return self.name
