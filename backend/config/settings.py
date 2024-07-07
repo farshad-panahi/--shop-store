@@ -1,12 +1,13 @@
 from pathlib import Path
+from decouple import config
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = 'no-secret-yet'
+SECRET_KEY = config('SECRET_KEY')
+DEBUG = config('DEBUG', cast=bool, default=True)
+ALLOWED_HOSTS = ['*']
 
-DEBUG = True
-
-ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -15,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+# MARK: INTERNAL APPS
     'app.roles',
     'app.store',
     'app.comment',
@@ -51,20 +53,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+DB =config('DB', default='SQLITE', cast=str)
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+match DB:
+    case 'SQLITE':
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+    case 'PSQL':
+        DATABASES = {
+        'default': {
+                'ENGINE'  : 'django.db.backends.postgresql',
+                
+                'NAME'    : config('DB_NAME'),
+                'USER'    : config('DB_USER'),
+                'PASSWORD': config('DB_PASS'),
+                'HOST'    : config('DB_HOST'),
+                'PORT'    : config('DB_PORT'),
+            }
+        }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -103,3 +114,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# MARK: THIRD-PARTY PACKAGES CONFIGURATION 
+
+
