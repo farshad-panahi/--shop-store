@@ -15,6 +15,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+# MARK: THIRD-PARTY APPS
+    'rest_framework',
+    'django_filters',
 
 # MARK: INTERNAL APPS
     'app.roles',
@@ -53,16 +56,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DB =config('DB', default='SQLITE', cast=str)
+DB =config('DB', default='slqlit', cast=str)
 
 match DB:
-    case 'SQLITE':
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
 
     case 'PSQL':
         DATABASES = {
@@ -74,6 +70,14 @@ match DB:
                 'PASSWORD': config('DB_PASS'),
                 'HOST'    : config('DB_HOST'),
                 'PORT'    : config('DB_PORT'),
+            }
+        }
+    
+    case _:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
             }
         }
 
@@ -115,7 +119,9 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'roles.BaseUser'
 
 # MARK: THIRD-PARTY PACKAGES CONFIGURATION 
 
 
+from .parties.drf.extras import *

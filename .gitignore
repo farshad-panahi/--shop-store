@@ -7,3 +7,4 @@ venv
 *.pyo
 db.sqlite3
 sql.sql
+migrations
