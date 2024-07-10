@@ -58,8 +58,8 @@ class Product(models.Model):
     description   = models.TextField()
     unit_price    = models.DecimalField(max_digits=6, decimal_places=2)
     inventory     = models.PositiveIntegerField()
-    date_created  = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    dt_created  = models.DateTimeField(auto_now_add=True)
+    dt_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
     	return self.name
@@ -121,29 +121,29 @@ class OrderItem(models.Model):
 		return self.product.name
 
 
-class TempCart(models.Model):
-    """
+class Cart(models.Model):
+	"""
 	TEMPORARY CART FOR ANON USERS
 	"""
-
-    id          = models.UUIDField(
+	id          = models.UUIDField(
 									primary_key=True, 
 									default=uuid4
 									)
-    dt_created  = models.DateTimeField(auto_now_add=True)
+	dt_created  = models.DateTimeField(auto_now_add=True)	
+	
+	class Meta:
+		db_table = 'temporary_cart'
+		verbose_name_plural = 'carts'
 
-    class Meta:
-    	db_table = 'temporary_cart'
-
-class TempCartItem(models.Model):
+class CartItem(models.Model):
 
 	cart        = models.ForeignKey(
-									TempCart, 
+									Cart, 
 									on_delete=models.CASCADE, 
 									related_name='items'
 									)
 	
-	items  		= models.ForeignKey(
+	product  		= models.ForeignKey(
 									Product, 
 									on_delete=models.CASCADE, 
 									related_name='cart_items'
@@ -152,7 +152,7 @@ class TempCartItem(models.Model):
 	quantity    = models.PositiveSmallIntegerField()
 
 	class Meta:
-		db_table        = 'cartitems'
-		unique_together = [['cart', 'items']]
+		db_table        = 'cartitem'
+		unique_together = [['cart', 'product']]
 
 
