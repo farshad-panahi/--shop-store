@@ -3,6 +3,8 @@ from rest_framework.viewsets       import ReadOnlyModelViewSet, GenericViewSet, 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters        import OrderingFilter, SearchFilter
 
+from .permissions import IsAdminOrReadOnly
+
 from .paginations                  import ProductPagination
 from .models        import (
                             Category,
@@ -32,10 +34,11 @@ class ProductViewset(ReadOnlyModelViewSet):
     pagination_class = ProductPagination
 
 
-class CategoryViewset(ReadOnlyModelViewSet):
+class CategoryViewset(ModelViewSet):
     """
     CATEGORY VIEW NEEDS PK FOR DETAIL
     """
+    permission_classes = (IsAdminOrReadOnly,)
     serializer_class = CategorySerilizer
     queryset         = Category.objects.prefetch_related('products')
 
@@ -55,7 +58,6 @@ class CartItemViewset(ModelViewSet):
     
     def get_queryset(self):
         cart_pk = self.kwargs.get('cart_pk')
-        print(cart_pk)
         return CartItem.objects.select_related('product', 'cart').filter(cart_id = cart_pk)
 
     def get_serializer_class(self):
