@@ -30,7 +30,7 @@ class Customer(models.Model):
 									db_index=True
 									)
 
-	phone 	    = models.CharField(max_length=11)
+	phone 	    = models.CharField(max_length=11, null=True, blank=True)
 	birth_date  = models.DateField(blank=True, null=True)
 
 	def __str__(self):
