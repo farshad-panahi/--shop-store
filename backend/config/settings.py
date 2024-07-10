@@ -18,7 +18,7 @@ INSTALLED_APPS = [
 # MARK: THIRD-PARTY APPS
     'rest_framework',
     'django_filters',
-
+        'drf_spectacular',
 # MARK: INTERNAL APPS
     'app.roles',
     'app.store',
@@ -125,3 +125,4 @@ AUTH_USER_MODEL = 'roles.BaseUser'
 
 
 from .parties.drf.extras import *
+from .parties.docs.doc import *
