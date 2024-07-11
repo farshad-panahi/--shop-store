@@ -22,11 +22,8 @@ TAX = 0.001
 
 class ProductSerializer(serializers.ModelSerializer):
 
-    category  = serializers.HyperlinkedRelatedField(
-        queryset=Category.objects.all(),
-        view_name= 'category-detail'
-    )
-    
+
+    category = serializers.StringRelatedField()
     class Meta:
         model  = Product
         fields = (
