@@ -5,7 +5,8 @@ from .models import (
     Product,
     Category,
     Cart,
-    CartItem
+    CartItem,
+    ProductImage
 )
 
 class CategorySerilizer(serializers.ModelSerializer):
@@ -16,20 +17,20 @@ class CategorySerilizer(serializers.ModelSerializer):
             'genre', 'about'
         )
 
-
-TAX = 0.001
-
-
 class ProductSerializer(serializers.ModelSerializer):
-
+    class ProductImageSerializer(serializers.ModelSerializer):
+        product = serializers.StringRelatedField()
+        class Meta:
+            model = ProductImage
+            fields= ('id', 'image', 'product')
 
     category = serializers.StringRelatedField()
+    images   = ProductImageSerializer(many=True)
     class Meta:
         model  = Product
         fields = (
-            'category', 'name', 'slug', 'description', 'unit_price', 'inventory', 'dt_created', 'dt_modified'
+            'category', 'name', 'slug', 'description', 'unit_price', 'inventory', 'dt_created', 'dt_modified', 'images' , 'likes'
         )
-
 
 
 class CartItemSerializer(serializers.ModelSerializer):

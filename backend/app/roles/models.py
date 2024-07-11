@@ -11,7 +11,7 @@ from .manager import BaseUserManager
 
 class BaseUser(AbstractUser):
 	username  = None
-	first_nam = models.CharField(max_length=50, blank=True, default="")
+	first_name = models.CharField(max_length=50, blank=True, default="")
 	last_name = models.CharField(max_length=50, blank=True, default="")
 	email 	  = models.EmailField(max_length=100, unique=True, db_index=True)
 
