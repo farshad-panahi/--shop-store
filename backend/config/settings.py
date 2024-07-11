@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_spectacular',
     'djoser',
+    'storages',
 
 # MARK: INTERNAL APPS
     'app.roles',
@@ -56,12 +57,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
 DB =config('DB', default='slqlit', cast=str)
 
 match DB:
-
     case 'PSQL':
         DATABASES = {
         'default': {
@@ -83,6 +81,19 @@ match DB:
             }
         }
 
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+
+WSGI_APPLICATION = 'config.wsgi.application'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -98,16 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
+LANGUAGE_CODE = 'Tehran-Asia'
 TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
+USE_I18N = False
 USE_TZ = True
 
 
@@ -115,6 +119,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_DIRS = [BASE_DIR / 'static',]
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'uploads'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -125,6 +133,8 @@ AUTH_USER_MODEL = 'roles.BaseUser'
 
 # MARK: THIRD-PARTY PACKAGES CONFIGURATION 
 
-from .parties.drf.extras  import *
-from .parties.docs.doc    import *
-from .parties.sjwt.extras import *
+from .parties.drf       import *
+from .parties.docs      import *
+from .parties.sjwt      import *
+from .parties.celery    import *
+from .parties.s3        import * 
