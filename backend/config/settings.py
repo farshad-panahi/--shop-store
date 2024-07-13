@@ -23,9 +23,9 @@ INSTALLED_APPS = [
     'storages',
 
 # MARK: INTERNAL APPS
-    'app.roles',
-    'app.store',
-    'app.comment',
+    'apps.roles',
+    'apps.store',
+    'apps.comment',
 ]
 
 
@@ -37,6 +37,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+# MARK: CUSTOM MIDDLEWARES
+    'middleware.anon_req_handler.StrangerRequestHandler'
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -91,6 +94,7 @@ STORAGES = {
     },
 }
 
+S3_FILE_UPLOAD_MAX_MEMORY_SIZE = 0 
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
