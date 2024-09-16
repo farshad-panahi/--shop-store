@@ -5,15 +5,15 @@ from .models import Comment
 
 class CommentSerializer(serializers.ModelSerializer):
     """
-    NO NEED TO SEND PRODUCT ID
-    NO NEED TO SEND USER ID
-    PROVIDES BY CONTEXT
+    *NO NEED TO SEND PRODUCT ID
+    *NO NEED TO SEND USER ID
+    PROVIDED BY CONTEXT
     """
 
     class Meta:
         model = Comment
         fields = ("id", "content", "datetime_created", "commentor", "product")
-        read_only_fields = ("product", "commentor")
+        read_only_fields = ("product", "commentor", "id")
 
     def create(self, validated_data):
         commentor = self.context.get("request").user

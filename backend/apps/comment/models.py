@@ -29,7 +29,8 @@ class Comment(models.Model):
     datetime_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=1, choices=COMMENT_STATUS_CHOICES, default=COMMENT_STATUS_WAITING
-    )  # get_status_display()
+    )
+    # Todo: get_status_display()
 
     def __str__(self):
         return self.content
