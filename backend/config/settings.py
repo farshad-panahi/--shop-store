@@ -1,11 +1,12 @@
 from pathlib import Path
 from decouple import config
+from storages.backends.s3boto3 import S3Boto3Storage
+from datetime import timedelta
 
-from .pkg_config import drf
-from .pkg_config import docs_schema 
-from .pkg_config import djoser 
-from .pkg_config import jwt 
-from .pkg_config import s3
+
+
+
+from . import docs_schema
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -120,11 +121,6 @@ LANGUAGE_CODE = "Tehran-Asia"
 TIME_ZONE = "UTC"
 USE_I18N = False
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = "static/"
 # STATIC_ROOT = BASE_DIR / 'staticfiles'
 # STATICFILES_DIRS = [BASE_DIR / 'static',]
@@ -139,8 +135,42 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "roles.BaseUser"
 
 # MARK: THIRD-PARTY PACKAGES CONFIGURATION
-REST_FRAMEWORK = drf.REST_FRAMEWORK
 SPECTACULAR_SETTINGS = docs_schema.SPECTACULAR_SETTINGS
-DJOSER = djoser.DJOSER
-SIMPLE_JWT = jwt.SIMPLE_JWT
-LIARA_STORAGE = s3.Liara
+
+
+class Liara(S3Boto3Storage):
+    def __init__(self, **settings):
+        super().__init__(**settings)
+
+        self.bucket_name = config("S3_BUCKET")
+        self.endpoint_url = config("S3_ENDPOINT")
+        self.access_key = config("S3_ACCESS_KEY")
+        self.secret_key = config("S3_SECRET_KEY")
+        self.querystring_auth = False
+        self.default_acl = "public-read"
+LIARA_STORAGE = Liara 
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(hours=2),
+}
+
+REST_FRAMEWORK = {
+    "COERCE_DECIMAL_TO_STRING": False,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+DJOSER = {
+    # 'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    # 'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    # 'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    # 'SEND_ACTIVATION_EMAIL': True,
+    "SERIALIZERS": {
+        "user_create": "apps.roles.serializers.CustomerCreateSerializer",
+        "current_user": "apps.roles.serializers.CustomerSerializer",
+    },
+}
