@@ -49,3 +49,17 @@ class CartAdmin(admin.ModelAdmin):
 
     list_display = ("id", "dt_created")
     inlines = (CartItemInline,)
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    fields = ["product", "product_amount", "quantity", "unit_price"]
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ["id", "customer", "status", "dt_created"]
+    list_per_page = 10
+    inlines = [
+        OrderItemInline,
+    ]

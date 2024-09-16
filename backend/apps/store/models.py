@@ -31,21 +31,12 @@ class Category(models.Model):
         return self.genre
 
 
-class Discount(models.Model):
-    discount = models.FloatField()
-    description = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{str(self.discount)} | {self.description}"
-
-
 class Product(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT, related_name="products", db_index=True
     )
 
-    discounts = models.ManyToManyField(Discount, blank=True, related_name="products")
-    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, through="ProductLike")
+    # likes = models.ManyToManyField(settings.AUTH_USER_MODEL, through="ProductLike")
 
     name = models.CharField(max_length=255, db_index=True)
     slug = models.SlugField(unique=True, db_index=True)
@@ -82,21 +73,21 @@ class ProductImage(models.Model):
         return self.product.name
 
 
-class ProductLike(models.Model):
-    """
-    m2m product and it's likes
-    """
+# class ProductLike(models.Model):
+#     """
+#     m2m product and it's likes
+#     """
 
-    liked_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True
-    )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, db_index=True)
-    dt_liked = models.DateTimeField(auto_now_add=True)
+#     liked_by = models.ForeignKey(
+#         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True
+#     )
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE, db_index=True)
+#     dt_liked = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["product", "liked_by"], name="unique_likes")
-        ]
+#     class Meta:
+#         constraints = [
+#             models.UniqueConstraint(fields=["product", "liked_by"], name="unique_likes")
+#         ]
 
 
 class Order(models.Model):
@@ -115,7 +106,10 @@ class Order(models.Model):
     )
 
     customer = models.ForeignKey(
-        Customer, on_delete=models.PROTECT, related_name="orders", db_index=True
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="orders",
+        db_index=True,
     )
 
     dt_created = models.DateTimeField(auto_now_add=True)
@@ -132,15 +126,13 @@ class OrderItem(models.Model):
         Product, on_delete=models.PROTECT, related_name="order_items", db_index=True
     )
 
-    product_amount = models.ForeignKey(
-        Order, on_delete=models.PROTECT, related_name="items"
-    )
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name="items")
 
     quantity = models.PositiveSmallIntegerField()
     unit_price = models.PositiveIntegerField()
 
     class Meta:
-        unique_together = [["product", "product_amount"]]
+        unique_together = [["product", "order"]]
 
     def __str__(self):
         return self.product.name
