@@ -1,12 +1,17 @@
 from rest_framework import serializers
+from djoser.serializers import UserCreateSerializer as DjoserUserCreaterSrz
 
-from .models import Customer
+
+class CustomerCreateSerializer(DjoserUserCreaterSrz):
+    # user_email = serializers.StringRelatedField(source="user")
+
+    class Meta(DjoserUserCreaterSrz.Meta):
+        fields = ("id", "email", "password")
 
 
-class CustomerSerializer(serializers.ModelSerializer):
-    user_email = serializers.StringRelatedField(source="user")
-
-    class Meta:
-        model = Customer
-        fields = ("id", "user_email", "phone", "birth_date")
-        read_only_fields = ("user_email",)
+class CustomerSerializer(DjoserUserCreaterSrz):
+    class Meta(DjoserUserCreaterSrz.Meta):
+        fields = (
+            "id",
+            "email",
+        )
